@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.awt.*;
 
 public class MandelbrotViewer extends JFrame {
+    private static final long serialVersionUID = 1L;
     private double[][] complexPlaneCoordinates = { { -1, -1 }, { 1, 1 } };
     private int[][] draggingCorners = new int[2][2];
     private int[][] bounds = new int[2][2];
@@ -87,43 +88,55 @@ public class MandelbrotViewer extends JFrame {
             public void keyTyped(KeyEvent ke) {
                 if (("" + ke.getKeyChar()).equals("\n")) {
                     showDraggingBox = false;
-                    double[][] newArr = new double[2][2];
+                    double[][] newArr = new double[2][2];// Invert y to min/max because of differing axis directions
+
                     newArr[0][0] = map(Math.min(draggingCorners[0][0], draggingCorners[1][0]), bounds[0][0],
                             bounds[1][0], complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0]);
-                    newArr[0][1] = map(Math.min(draggingCorners[0][1], draggingCorners[1][1]), bounds[0][1],
-                            bounds[1][1], complexPlaneCoordinates[1][1], complexPlaneCoordinates[0][1]);
+
                     newArr[1][0] = map(Math.max(draggingCorners[0][0], draggingCorners[1][0]), bounds[0][0],
                             bounds[1][0], complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0]);
-                    newArr[1][1] = map(Math.max(draggingCorners[0][1], draggingCorners[1][1]), bounds[0][1],
-                            bounds[1][1], complexPlaneCoordinates[1][1], complexPlaneCoordinates[0][1]);
+
+                    newArr[0][1] = map(Math.max(draggingCorners[0][1], draggingCorners[1][1]),
+                            bounds[1][1], bounds[0][1], complexPlaneCoordinates[0][1], complexPlaneCoordinates[1][1]);
+
+                    newArr[1][1] = map(Math.min(draggingCorners[0][1], draggingCorners[1][1]),
+                            bounds[1][1], bounds[0][1], complexPlaneCoordinates[0][1], complexPlaneCoordinates[1][1]);
+                    
+                    // newArr[0][1] = map(Math.max(draggingCorners[0][1], draggingCorners[1][1]),
+                    // bounds[0][1],
+                    // bounds[1][1], complexPlaneCoordinates[1][1], complexPlaneCoordinates[0][1]);
+                    
+                    // newArr[1][1] = map(Math.min(draggingCorners[0][1], draggingCorners[1][1]),
+                    // bounds[0][1],
+                    // bounds[1][1], complexPlaneCoordinates[1][1], complexPlaneCoordinates[0][1]);
                     complexPlaneCoordinates = newArr;
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("o")) {
+                } else if (("" + ke.getKeyChar()).equals("o")) {
                     zoomOut();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("i")) {
+                } else if (("" + ke.getKeyChar()).equals("i")) {
                     zoomIn();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("a")) {
+                } else if (("" + ke.getKeyChar()).equals("a")) {
                     moveLeft();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("d")) {
+                } else if (("" + ke.getKeyChar()).equals("d")) {
                     moveRight();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("w")) {
+                } else if (("" + ke.getKeyChar()).equals("w")) {
                     moveUp();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("s")) {
+                } else if (("" + ke.getKeyChar()).equals("s")) {
                     moveDown();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("u")) {
+                } else if (("" + ke.getKeyChar()).equals("u")) {
                     makeSquare();
                     genImage();
                     repaint();
@@ -133,8 +146,9 @@ public class MandelbrotViewer extends JFrame {
     }
 
     public static double map(double val, double min, double max, double newMin, double newMax) {
-        // double out = newMin + (newMin < newMax ? 1 : -1) * (val - min) / (max - min) * Math.abs(newMax - newMin);
-        double out = newMin + (val-min)/(max-min)*(newMax-newMin);
+        // double out = newMin + (newMin < newMax ? 1 : -1) * (val - min) / (max - min)
+        // * Math.abs(newMax - newMin);
+        double out = newMin + (val - min) / (max - min) * (newMax - newMin);
         return out;
     }
 
@@ -201,15 +215,15 @@ public class MandelbrotViewer extends JFrame {
     public void moveUp() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
-        complexPlaneCoordinates[0][1] -= height / 4;
-        complexPlaneCoordinates[1][1] -= height / 4;
+        complexPlaneCoordinates[0][1] += height / 4;
+        complexPlaneCoordinates[1][1] += height / 4;
     }
 
     public void moveDown() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
-        complexPlaneCoordinates[0][1] += height / 4;
-        complexPlaneCoordinates[1][1] += height / 4;
+        complexPlaneCoordinates[0][1] -= height / 4;
+        complexPlaneCoordinates[1][1] -= height / 4;
     }
 
     public void genImage() {
@@ -217,8 +231,9 @@ public class MandelbrotViewer extends JFrame {
         bounds[0][1] = getHeight() * 2 / 8;
         bounds[1][0] = getWidth() * 7 / 8;
         bounds[1][1] = getHeight() * 7 / 8;
-        mb = MandelbrotImage.mandelbrotImage(bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1], complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0], complexPlaneCoordinates[0][1], complexPlaneCoordinates[1][1],
-                100);
+        mb = MandelbrotImage.mandelbrotImage(bounds[1][0] - bounds[0][0], bounds[1][1] - bounds[0][1],
+                complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0], complexPlaneCoordinates[0][1],
+                complexPlaneCoordinates[1][1], 200);
     }
 
 }

@@ -6,7 +6,7 @@ run:
 	java -jar MandelbrotViewer.jar
 
 build:
-	javac *.java
+	javac source/*.java -d .
 
 clean:
 	rm *.class
@@ -18,3 +18,6 @@ commit:
 	git add -A
 	git commit -m $(msg)
 	git push
+
+doc:
+	javadoc source/*.java -d docs/
