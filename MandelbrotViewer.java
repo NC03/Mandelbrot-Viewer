@@ -107,23 +107,23 @@ public class MandelbrotViewer extends JFrame {
                     zoomIn();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("l")) {
+                }else if (("" + ke.getKeyChar()).equals("a")) {
                     moveLeft();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("r")) {
+                }else if (("" + ke.getKeyChar()).equals("d")) {
                     moveRight();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("u")) {
+                }else if (("" + ke.getKeyChar()).equals("w")) {
                     moveUp();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("d")) {
+                }else if (("" + ke.getKeyChar()).equals("s")) {
                     moveDown();
                     genImage();
                     repaint();
-                }else if (("" + ke.getKeyChar()).equals("s")) {
+                }else if (("" + ke.getKeyChar()).equals("u")) {
                     makeSquare();
                     genImage();
                     repaint();

@@ -15,5 +15,6 @@ pack:
 	jar -cfe MandelbrotViewer.jar MandelbrotViewer *.class
 
 commit:
+	git add -A
 	git commit -m $(msg)
 	git push
