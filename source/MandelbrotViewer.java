@@ -172,11 +172,14 @@ public class MandelbrotViewer extends JFrame {
                     makeSquare();
                     genImage();
                     repaint();
-                } else if ((int) ke.getKeyChar() == 7) {
+                } else if ((int) ke.getKeyChar() == 27) {
                     if (showDraggingBox) {
                         showDraggingBox = false;
+                        repaint();
                     } else {
                         resetDimensions();
+                        genImage();
+                        repaint();
                     }
                 }
             }
