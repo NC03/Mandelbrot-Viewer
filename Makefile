@@ -1,6 +1,6 @@
 all: build pack clean
 
-export msg="Auto Commit from Makefile"
+export msg=Auto Commit from Makefile
 
 run:
 	java -jar MandelbrotViewer.jar
