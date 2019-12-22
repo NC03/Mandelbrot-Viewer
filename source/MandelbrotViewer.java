@@ -1,24 +1,28 @@
-import javax.swing.*;
-import java.awt.*;
-import java.lang.Thread;
-import java.io.*;
-import java.awt.image.*;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
+import javax.swing.JFrame;
+import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.KeyListener;
 
 public class MandelbrotViewer extends JFrame {
     private static final long serialVersionUID = 1L;
-    private double[][] complexPlaneCoordinates = { { -1, -1 }, { 1, 1 } };
+    private double[][] complexPlaneCoordinates = new double[2][2];
     private int[][] draggingCorners = new int[2][2];
     private int[][] bounds = new int[2][2];
     private boolean showDraggingBox = false;
     private BufferedImage mb;
+    private boolean initialize = false;
 
     public static void main(String[] args) {
-        System.out.println(map(2, 1, 5, 5, 1));
-        MandelbrotViewer mv = new MandelbrotViewer();
+        System.out.println(MandelbrotImage.map(1, 0, 1, 0, 100));
+        new MandelbrotViewer();
     }
 
     public MandelbrotViewer() {
@@ -28,8 +32,8 @@ public class MandelbrotViewer extends JFrame {
         setSize(600, 400);
         addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent evt) {
-                System.out.println("resize");
                 genImage();
+                repaint();
             }
         });
         addMouseListener(new MouseListener() {
@@ -42,7 +46,7 @@ public class MandelbrotViewer extends JFrame {
             }
 
             public void mouseReleased(MouseEvent me) {
-                showDraggingBox = false;
+
             }
 
             public void mousePressed(MouseEvent me) {
@@ -86,29 +90,27 @@ public class MandelbrotViewer extends JFrame {
             }
 
             public void keyTyped(KeyEvent ke) {
-                if (("" + ke.getKeyChar()).equals("\n")) {
+                if (("" + ke.getKeyChar()).equals("\n") && showDraggingBox) {
                     showDraggingBox = false;
-                    double[][] newArr = new double[2][2];// Invert y to min/max because of differing axis directions
+                    bounds[0][0] = getWidth() / 8;
+                    bounds[0][1] = getHeight() * 2 / 8;
+                    bounds[1][0] = getWidth() * 7 / 8;
+                    bounds[1][1] = getHeight() * 7 / 8;
 
-                    newArr[0][0] = map(Math.min(draggingCorners[0][0], draggingCorners[1][0]), bounds[0][0],
-                            bounds[1][0], complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0]);
+                    double[][] newArr = new double[2][2];
 
-                    newArr[1][0] = map(Math.max(draggingCorners[0][0], draggingCorners[1][0]), bounds[0][0],
-                            bounds[1][0], complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0]);
+                    newArr[0][0] = MandelbrotImage.map(Math.min(draggingCorners[0][0], draggingCorners[1][0]),
+                            bounds[0][0], bounds[1][0], complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0]);
 
-                    newArr[0][1] = map(Math.max(draggingCorners[0][1], draggingCorners[1][1]),
+                    newArr[1][0] = MandelbrotImage.map(Math.max(draggingCorners[0][0], draggingCorners[1][0]),
+                            bounds[0][0], bounds[1][0], complexPlaneCoordinates[0][0], complexPlaneCoordinates[1][0]);
+
+                    newArr[0][1] = MandelbrotImage.map(Math.max(draggingCorners[0][1], draggingCorners[1][1]),
                             bounds[1][1], bounds[0][1], complexPlaneCoordinates[0][1], complexPlaneCoordinates[1][1]);
 
-                    newArr[1][1] = map(Math.min(draggingCorners[0][1], draggingCorners[1][1]),
+                    newArr[1][1] = MandelbrotImage.map(Math.min(draggingCorners[0][1], draggingCorners[1][1]),
                             bounds[1][1], bounds[0][1], complexPlaneCoordinates[0][1], complexPlaneCoordinates[1][1]);
-                    
-                    // newArr[0][1] = map(Math.max(draggingCorners[0][1], draggingCorners[1][1]),
-                    // bounds[0][1],
-                    // bounds[1][1], complexPlaneCoordinates[1][1], complexPlaneCoordinates[0][1]);
-                    
-                    // newArr[1][1] = map(Math.min(draggingCorners[0][1], draggingCorners[1][1]),
-                    // bounds[0][1],
-                    // bounds[1][1], complexPlaneCoordinates[1][1], complexPlaneCoordinates[0][1]);
+
                     complexPlaneCoordinates = newArr;
                     genImage();
                     repaint();
@@ -140,20 +142,40 @@ public class MandelbrotViewer extends JFrame {
                     makeSquare();
                     genImage();
                     repaint();
+                } else if ((int) ke.getKeyChar() == 7) {
+                    if (showDraggingBox) {
+                        showDraggingBox = false;
+                    } else {
+                        resetDimensions();
+                    }
                 }
             }
         });
     }
 
-    public static double map(double val, double min, double max, double newMin, double newMax) {
-        // double out = newMin + (newMin < newMax ? 1 : -1) * (val - min) / (max - min)
-        // * Math.abs(newMax - newMin);
-        double out = newMin + (val - min) / (max - min) * (newMax - newMin);
-        return out;
+    public void resetDimensions() {
+        bounds[0][0] = getWidth() / 8;
+        bounds[0][1] = getHeight() * 2 / 8;
+        bounds[1][0] = getWidth() * 7 / 8;
+        bounds[1][1] = getHeight() * 7 / 8;
+        complexPlaneCoordinates[0][0] = -3;
+        complexPlaneCoordinates[0][1] = -1.5;
+        complexPlaneCoordinates[1][0] = 2;
+        complexPlaneCoordinates[1][1] = 1.5;
+        makeSquare();
     }
 
     @Override
     public void paint(Graphics g) {
+        bounds[0][0] = getWidth() / 8;
+        bounds[0][1] = getHeight() * 2 / 8;
+        bounds[1][0] = getWidth() * 7 / 8;
+        bounds[1][1] = getHeight() * 7 / 8;
+        if(!initialize)
+        {
+            initialize = true;
+            resetDimensions();
+        }
 
         g.setColor(new Color(255, 255, 255));
         g.fillRect(0, 0, getWidth(), getHeight());
