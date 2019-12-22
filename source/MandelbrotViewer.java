@@ -11,22 +11,52 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.KeyListener;
 
+/**
+ * Mandelbrot Set Image Viewer GUI
+ * 
+ * @author NC
+ * @version 1.0.0
+ */
 public class MandelbrotViewer extends JFrame {
+    /**
+     * JFrame Data
+     */
     private static final long serialVersionUID = 1L;
+    /**
+     * Complex coordinates of screen endpoints in the complex plane
+     */
     private double[][] complexPlaneCoordinates = new double[2][2];
+    /**
+     * Coordinates of the corners of the drag interface
+     */
     private int[][] draggingCorners = new int[2][2];
+    /**
+     * coordinates of the boundaries of the screen of the image
+     */
     private int[][] bounds = new int[2][2];
+    /**
+     * Boolean on whether to display the dragging interface
+     */
     private boolean showDraggingBox = false;
+    /**
+     * The image stored in a fvariable so that it is not rerendered everytime
+     * {@link repaint} is called
+     */
     private BufferedImage mb;
+    /**
+     * Boolean to cause {@link repaint} to generate the image on startup
+     */
     private boolean initialize = false;
 
     public static void main(String[] args) {
-        System.out.println(MandelbrotImage.map(1, 0, 1, 0, 100));
         new MandelbrotViewer();
     }
 
+    /**
+     * Default Constructor
+     */
     public MandelbrotViewer() {
-        super("MandelbrotViewer");
+        super("Mandelbrot Viewer");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setVisible(true);
         setSize(600, 400);
@@ -153,6 +183,9 @@ public class MandelbrotViewer extends JFrame {
         });
     }
 
+    /**
+     * Resets the complex coordinates of the screen
+     */
     public void resetDimensions() {
         bounds[0][0] = getWidth() / 8;
         bounds[0][1] = getHeight() * 2 / 8;
@@ -165,14 +198,18 @@ public class MandelbrotViewer extends JFrame {
         makeSquare();
     }
 
+    /**
+     * Paints the JFrame
+     * 
+     * @param g The JFrame Graphics
+     */
     @Override
     public void paint(Graphics g) {
         bounds[0][0] = getWidth() / 8;
         bounds[0][1] = getHeight() * 2 / 8;
         bounds[1][0] = getWidth() * 7 / 8;
         bounds[1][1] = getHeight() * 7 / 8;
-        if(!initialize)
-        {
+        if (!initialize) {
             initialize = true;
             resetDimensions();
         }
@@ -192,6 +229,9 @@ public class MandelbrotViewer extends JFrame {
         }
     }
 
+    /**
+     * Changes the complex coordinates to maintain the aspect ratio of the screen
+     */
     public void makeSquare() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
@@ -202,6 +242,9 @@ public class MandelbrotViewer extends JFrame {
         complexPlaneCoordinates[1][0] = mid + newWidth / 2;
     }
 
+    /**
+     * Zooms out on the image
+     */
     public void zoomOut() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
@@ -211,6 +254,9 @@ public class MandelbrotViewer extends JFrame {
         complexPlaneCoordinates[1][1] += height / 4;
     }
 
+    /**
+     * Zooms in on the image
+     */
     public void zoomIn() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
@@ -220,6 +266,9 @@ public class MandelbrotViewer extends JFrame {
         complexPlaneCoordinates[1][1] -= height / 4;
     }
 
+    /**
+     * Translates the image to the left
+     */
     public void moveLeft() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
@@ -227,6 +276,9 @@ public class MandelbrotViewer extends JFrame {
         complexPlaneCoordinates[1][0] -= width / 4;
     }
 
+    /**
+     * Translates the image to the right
+     */
     public void moveRight() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
@@ -234,6 +286,9 @@ public class MandelbrotViewer extends JFrame {
         complexPlaneCoordinates[1][0] += width / 4;
     }
 
+    /**
+     * Translates the image up
+     */
     public void moveUp() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
@@ -241,6 +296,9 @@ public class MandelbrotViewer extends JFrame {
         complexPlaneCoordinates[1][1] += height / 4;
     }
 
+    /**
+     * Translates the image down
+     */
     public void moveDown() {
         double width = complexPlaneCoordinates[1][0] - complexPlaneCoordinates[0][0];
         double height = complexPlaneCoordinates[1][1] - complexPlaneCoordinates[0][1];
@@ -248,6 +306,9 @@ public class MandelbrotViewer extends JFrame {
         complexPlaneCoordinates[1][1] -= height / 4;
     }
 
+    /**
+     * Generates the image based on the current arguments
+     */
     public void genImage() {
         bounds[0][0] = getWidth() / 8;
         bounds[0][1] = getHeight() * 2 / 8;
